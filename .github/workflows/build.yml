@@ -11,12 +11,14 @@ jobs:
         run: |
           sed -i 's#psp2/ctrl/ctrl.h#psp2/ctrl.h#' g/src/main.c
           sed -i 's#SceCtrl_stub#SceCtrl_stub SceAppMgr_stub XXFBXX#' g/CMakeLists.txt
+          sed -i '/livearea/d' g/CMakeLists.txt
+          pip install pillow
+          python3 -c "from PIL import Image; Image.open('g/sce_sys/icon0.png').convert('RGB').resize((128,128)).quantize(256).save('g/sce_sys/icon0.png')"
       - name: Compiler avec vitasdk
         run: |
           docker run --rm -v "$PWD/g":/src -w /src vitasdk/vitasdk:latest bash -c '
             LIBDIR=/usr/local/vitasdk/arm-vita-eabi/lib
             F=$(grep -l sceSharedFbBegin $LIBDIR/*.a | grep -v vita2d | head -1)
-            echo "Bibliotheque trouvee: $F"
             L=$(basename "$F" .a | sed "s/^lib//")
             sed -i "s#XXFBXX#$L#" CMakeLists.txt
             mkdir -p build && cd build && cmake .. && make
