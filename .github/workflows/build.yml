@@ -7,8 +7,10 @@ jobs:
       - uses: actions/checkout@v4
       - name: Décompresser
         run: unzip -q A-la-quete-d-Onyx.zip
-      - name: Corriger l'en-tête manette
-        run: sed -i 's#psp2/ctrl/ctrl.h#psp2/ctrl.h#' g/src/main.c
+      - name: Corrections
+        run: |
+          sed -i 's#psp2/ctrl/ctrl.h#psp2/ctrl.h#' g/src/main.c
+          sed -i 's#SceCtrl_stub#SceCtrl_stub SceAppMgr_stub SceSharedFb_stub#' g/CMakeLists.txt
       - name: Compiler avec vitasdk
         run: |
           docker run --rm -v "$PWD/g":/src -w /src vitasdk/vitasdk:latest \
