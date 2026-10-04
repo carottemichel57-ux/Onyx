@@ -1,0 +1,17 @@
+name: Build VPK
+on: [push, workflow_dispatch]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Décompresser
+        run: unzip -q A-la-quete-d-Onyx.zip
+      - name: Compiler avec vitasdk
+        run: |
+          docker run --rm -v "$PWD/g":/src -w /src vitasdk/vitasdk:latest \
+            bash -c "mkdir -p build && cd build && cmake .. && make"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: A-la-quete-d-Onyx-vpk
+          path: g/build/onyx.vpk
